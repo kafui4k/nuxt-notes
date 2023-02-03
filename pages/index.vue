@@ -1,5 +1,10 @@
+<script setup lang="ts">
+const { supabase } = useSupabase();
+</script>
+
 <template>
   <div>
+    {{ supabase }}
     <div class="container">
       <AuthCard />
     </div>
