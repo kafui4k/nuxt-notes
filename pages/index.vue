@@ -4,7 +4,6 @@ const { supabase } = useSupabase();
 
 <template>
   <div>
-    {{ supabase }}
     <div class="container">
       <AuthCard />
     </div>
@@ -18,6 +17,6 @@ const { supabase } = useSupabase();
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 90vh;
 }
 </style>

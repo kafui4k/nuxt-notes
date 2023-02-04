@@ -1,28 +1,68 @@
 <script setup lang="ts">
+const { signUp, signIn, signOut, user } = useAuth();
+
 const authState = ref<"login" | "signup">("login");
+const authError = ref("");
+const showConfirmEmailMessage = ref(false);
+const input = reactive({
+  email: "",
+  password: "",
+});
+
+const router = useRouter();
 
 const toggleAuthState = () => {
   if (authState.value === "login") authState.value = "signup";
   else authState.value = "login";
+
+  authError.value = "";
+};
+
+const handleSubmit = async () => {
+  try {
+    if (authState.value === "login") {
+      await signIn({ email: input.email, password: input.password });
+
+      router.push("/myprofile");
+    } else {
+      // TODO: signup
+      await signUp({ email: input.email, password: input.password });
+      showConfirmEmailMessage.value = true;
+    }
+    input.email = "";
+    input.password = "";
+  } catch (error) {
+    authError.value = error.message;
+  }
 };
 </script>
 
 <template>
   <div>
     <NCard class="card">
-      <h3>{{ authState }}</h3>
-      <div class="input-container">
-        <input type="email" placeholder="Email" />
-        <input type="password" placeholder="Password" />
+      <div v-if="!showConfirmEmailMessage">
+        <h3>{{ authState }}</h3>
+        <div class="input-container">
+          <input type="email" placeholder="Email" v-model="input.email" />
+          <input
+            type="password"
+            placeholder="Password"
+            v-model="input.password"
+          />
+        </div>
+        <NButton @click="handleSubmit">Submit</NButton>
+        <p v-if="authError" class="error">{{ authError }}</p>
+        <p @click="toggleAuthState">
+          {{
+            authState === "login"
+              ? "Don't have an account? Create one now."
+              : "Already Have an account? Go ahead and login"
+          }}
+        </p>
       </div>
-      <NButton>Submit</NButton>
-      <p @click="toggleAuthState">
-        {{
-          authState === "login"
-            ? "Don't have an account? Create one now."
-            : "Already Have an account? Go ahead and login"
-        }}
-      </p>
+      <div v-else>
+        <h3>Check email for confirmation message</h3>
+      </div>
     </NCard>
   </div>
 </template>
@@ -56,5 +96,9 @@ p {
   color: blue;
   cursor: pointer;
   font-size: 0.5rem;
+}
+
+.error {
+  color: red;
 }
 </style>
